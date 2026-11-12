@@ -6,6 +6,9 @@ export async function searchCountries(
     `https://countries.dev/name/${encodeURIComponent(query)}`,
     { signal },
   );
+  if (response.status === 404) {
+    return [];
+  }
   if (!response.ok) {
     throw new Error(`HTTP error: ${response.status}`);
   }
