@@ -1,3 +1,5 @@
+import { debounce } from './utils/debounce.js';
+
 const app = document.createElement('main');
 
 const title = document.createElement('h1');
@@ -7,6 +9,12 @@ const searchInput = document.createElement('input');
 searchInput.type = 'search';
 searchInput.placeholder = 'Search for a country...';
 searchInput.setAttribute('aria-label', 'Search countries');
+
+const handleSearch = debounce(() => {
+  console.log('Searching for:', searchInput.value);
+}, 300);
+
+searchInput.addEventListener('input', handleSearch);
 
 const results = document.createElement('section');
 results.id = 'results';
