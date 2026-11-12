@@ -59,4 +59,46 @@ describe('searchCountries', () => {
 
     expect(result).toEqual([]);
   });
+
+  it('should pass AbortSignal to fetch', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => [],
+    });
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    const controller = new AbortController();
+
+    await searchCountries('germany', controller.signal);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://countries.dev/name/germany',
+      { signal: controller.signal },
+    );
+  });
+
+  it('should reject with AbortError when request is aborted', async () => {
+    const controller = new AbortController();
+
+    const fetchMock = vi.fn().mockImplementation(
+      (_url: string, options: RequestInit) =>
+        new Promise((_resolve, reject) => {
+          options.signal?.addEventListener('abort', () => {
+            reject(new DOMException('Aborted', 'AbortError'));
+          });
+        }),
+    );
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    const promise = searchCountries('germany', controller.signal);
+
+    controller.abort();
+
+    await expect(promise).rejects.toMatchObject({
+      name: 'AbortError',
+    });
+  });
 });
