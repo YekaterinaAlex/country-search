@@ -6,5 +6,8 @@ export async function searchCountries(
     `https://countries.dev/name/${encodeURIComponent(query)}`,
     { signal },
   );
+  if (!response.ok) {
+    throw new Error(`HTTP error: ${response.status}`);
+  }
   return response.json();
 }
