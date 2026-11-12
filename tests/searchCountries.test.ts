@@ -44,4 +44,19 @@ describe('searchCountries', () => {
       'HTTP error: 500',
     );
   });
+
+  it('should return an empty array for HTTP 404', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 404,
+    });
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    const controller = new AbortController();
+
+    const result = await searchCountries('unknown', controller.signal);
+
+    expect(result).toEqual([]);
+  });
 });
