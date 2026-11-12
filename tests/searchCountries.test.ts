@@ -29,4 +29,19 @@ describe('searchCountries', () => {
       }),
     );
   });
+
+  it('should throw an error when response is not ok', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+    });
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    const controller = new AbortController();
+
+    await expect(searchCountries('germany', controller.signal)).rejects.toThrow(
+      'HTTP error: 500',
+    );
+  });
 });
