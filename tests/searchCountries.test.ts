@@ -101,4 +101,26 @@ describe('searchCountries', () => {
       name: 'AbortError',
     });
   });
+
+  it('should create a timeout signal', async () => {
+    const timeoutSpy = vi.spyOn(AbortSignal, 'timeout');
+
+    try {
+      const fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => [],
+      });
+
+      vi.stubGlobal('fetch', fetchMock);
+
+      const controller = new AbortController();
+
+      await searchCountries('germany', controller.signal);
+
+      expect(timeoutSpy).toHaveBeenCalledWith(expect.any(Number));
+    } finally {
+      timeoutSpy.mockRestore();
+    }
+  });
 });
