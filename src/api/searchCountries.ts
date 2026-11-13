@@ -2,9 +2,12 @@ export async function searchCountries(
   query: string,
   signal: AbortSignal,
 ): Promise<unknown> {
+  const timeoutSignal = AbortSignal.timeout(5000);
+
+  const combinedSignal = AbortSignal.any([signal, timeoutSignal]);
   const response = await fetch(
     `https://countries.dev/name/${encodeURIComponent(query)}`,
-    { signal },
+    { signal: combinedSignal },
   );
   if (response.status === 404) {
     return [];

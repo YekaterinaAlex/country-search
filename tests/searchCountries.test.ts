@@ -24,9 +24,9 @@ describe('searchCountries', () => {
     expect(result).toEqual(countries);
     expect(fetchMock).toHaveBeenCalledWith(
       'https://countries.dev/name/germany',
-      expect.objectContaining({
-        signal: controller.signal,
-      }),
+      {
+        signal: expect.any(AbortSignal),
+      },
     );
   });
 
@@ -60,7 +60,7 @@ describe('searchCountries', () => {
     expect(result).toEqual([]);
   });
 
-  it('should pass AbortSignal to fetch', async () => {
+  it('should pass a combined AbortSignal to fetch', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
@@ -73,10 +73,15 @@ describe('searchCountries', () => {
 
     await searchCountries('germany', controller.signal);
 
-    expect(fetchMock).toHaveBeenCalledWith(
-      'https://countries.dev/name/germany',
-      { signal: controller.signal },
-    );
+    const options = fetchMock.mock.calls[0][1] as RequestInit;
+    const combinedSignal = options.signal;
+
+    expect(combinedSignal).toBeInstanceOf(AbortSignal);
+    expect(combinedSignal?.aborted).toBe(false);
+
+    controller.abort();
+
+    expect(combinedSignal?.aborted).toBe(true);
   });
 
   it('should reject with AbortError when request is aborted', async () => {
