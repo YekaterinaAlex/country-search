@@ -2,6 +2,7 @@ import { debounce } from './utils/debounce.js';
 import { searchCountries } from './api/searchCountries.js';
 import { mapCountryResponse } from './utils/mapCountryResponse.js';
 import { createCountryCard } from './ui/createCountryCard.js';
+import { createErrorMessage } from './ui/createErrorMessage.js';
 
 const app = document.createElement('main');
 
@@ -15,7 +16,7 @@ searchInput.setAttribute('aria-label', 'Search countries');
 
 let currentController: AbortController | null = null;
 
-const handleSearch = debounce(async () => {
+const performSearch = async () => {
   const query = searchInput.value.trim();
 
   if (!query) {
@@ -72,17 +73,20 @@ const handleSearch = debounce(async () => {
 
     results.replaceChildren();
 
-    const message = document.createElement('p');
+    const errorText =
+      error instanceof Error && error.name === 'TimeoutError'
+        ? 'Request timed out. Please try again.'
+        : 'Something went wrong. Please try again.';
 
-    if (error instanceof Error && error.name === 'TimeoutError') {
-      message.textContent = 'Request timed out. Please try again.';
-    } else {
-      message.textContent = 'Something went wrong. Please try again.';
-    }
+    const errorElement = createErrorMessage(errorText, () => {
+      void performSearch();
+    });
 
-    results.append(message);
+    results.append(errorElement);
   }
-}, 300);
+};
+
+const handleSearch = debounce(performSearch, 300);
 
 searchInput.addEventListener('input', () => {
   currentController?.abort();
