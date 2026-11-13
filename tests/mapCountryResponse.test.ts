@@ -1,0 +1,74 @@
+import { describe, expect, it } from 'vitest';
+import { mapCountryResponse } from '../src/utils/mapCountryResponse.js';
+
+describe('mapCountryResponse', () => {
+  it('should map API data to Country', () => {
+    const apiCountry = {
+      name: 'Germany',
+      capital: 'Berlin',
+      population: 83200000,
+      flag: '🇩🇪',
+      region: 'Europe',
+      alpha2Code: 'DE',
+      languages: [],
+    };
+
+    const result = mapCountryResponse(apiCountry);
+
+    expect(result).toEqual({
+      name: 'Germany',
+      capital: 'Berlin',
+      population: 83200000,
+      flag: '🇩🇪',
+      region: 'Europe',
+      languages: [],
+    });
+  });
+
+  it('should map region and languages', () => {
+    const apiCountry = {
+      name: 'Germany',
+      capital: 'Berlin',
+      region: 'Europe',
+      population: 83240525,
+      flag: '🇩🇪',
+      languages: [
+        {
+          name: 'German',
+          nativeName: 'Deutsch',
+        },
+      ],
+    };
+
+    const result = mapCountryResponse(apiCountry);
+
+    expect(result.region).toBe('Europe');
+    expect(result.languages).toEqual(['German']);
+  });
+
+  it('should map country details', () => {
+    const apiCountry = {
+      name: 'Germany',
+      capital: 'Berlin',
+      region: 'Europe',
+      population: 83200000,
+      flag: '🇩🇪',
+      languages: [{ name: 'German' }],
+      area: 357114,
+      borders: ['AUT', 'FRA', 'POL'],
+      currencies: [
+        {
+          code: 'EUR',
+          name: 'Euro',
+          symbol: '€',
+        },
+      ],
+    };
+
+    const result = mapCountryResponse(apiCountry);
+
+    expect(result.area).toBe(357114);
+    expect(result.borders).toEqual(['AUT', 'FRA', 'POL']);
+    expect(result.currencies).toEqual(['Euro (EUR)']);
+  });
+});
