@@ -5,4 +5,8 @@ export interface Country {
   population: number;
   flag: string;
   languages: string[];
+
+  area?: number;
+  borders?: string[];
+  currencies?: string[];
 }

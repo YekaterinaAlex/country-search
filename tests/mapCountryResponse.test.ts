@@ -45,4 +45,30 @@ describe('mapCountryResponse', () => {
     expect(result.region).toBe('Europe');
     expect(result.languages).toEqual(['German']);
   });
+
+  it('should map country details', () => {
+    const apiCountry = {
+      name: 'Germany',
+      capital: 'Berlin',
+      region: 'Europe',
+      population: 83200000,
+      flag: '🇩🇪',
+      languages: [{ name: 'German' }],
+      area: 357114,
+      borders: ['AUT', 'FRA', 'POL'],
+      currencies: [
+        {
+          code: 'EUR',
+          name: 'Euro',
+          symbol: '€',
+        },
+      ],
+    };
+
+    const result = mapCountryResponse(apiCountry);
+
+    expect(result.area).toBe(357114);
+    expect(result.borders).toEqual(['AUT', 'FRA', 'POL']);
+    expect(result.currencies).toEqual(['Euro (EUR)']);
+  });
 });
