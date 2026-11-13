@@ -21,4 +21,25 @@ describe('mapCountryResponse', () => {
       flag: '🇩🇪',
     });
   });
+
+  it('should map region and languages', () => {
+    const apiCountry = {
+      name: 'Germany',
+      capital: 'Berlin',
+      region: 'Europe',
+      population: 83240525,
+      flag: '🇩🇪',
+      languages: [
+        {
+          name: 'German',
+          nativeName: 'Deutsch',
+        },
+      ],
+    };
+
+    const result = mapCountryResponse(apiCountry);
+
+    expect(result.region).toBe('Europe');
+    expect(result.languages).toEqual(['German']);
+  });
 });
