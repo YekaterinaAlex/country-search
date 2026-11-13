@@ -1,6 +1,7 @@
 import { debounce } from './utils/debounce.js';
 import { searchCountries } from './api/searchCountries.js';
 import { mapCountryResponse } from './utils/mapCountryResponse.js';
+import { createCountryCard } from './ui/createCountryCard.js';
 
 const app = document.createElement('main');
 
@@ -59,35 +60,7 @@ const handleSearch = debounce(async () => {
     }
 
     countries.forEach((country) => {
-      const card = document.createElement('article');
-      card.className = 'country-card';
-
-      const flag = document.createElement('span');
-      flag.className = 'country-flag';
-      flag.textContent = country.flag;
-
-      const name = document.createElement('h2');
-      name.textContent = country.name;
-
-      const details = document.createElement('div');
-      details.className = 'country-details';
-
-      const capital = document.createElement('p');
-      capital.textContent = `Capital: ${country.capital}`;
-
-      const region = document.createElement('p');
-      region.textContent = `Region: ${country.region}`;
-
-      const population = document.createElement('p');
-      population.textContent = `Population: ${country.population.toLocaleString('en-US')}`;
-
-      const languages = document.createElement('p');
-
-      languages.textContent = `Languages: ${country.languages.join(', ')}`;
-
-      details.append(name, capital, region, population, languages);
-      card.append(flag, details);
-
+      const card = createCountryCard(country);
       results.append(card);
     });
   } catch (error) {
