@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { searchCountries } from '../src/api/searchCountries.js';
+import { HttpError } from '../src/api/HttpError.js';
 
 describe('searchCountries', () => {
   afterEach(() => {
@@ -40,9 +41,9 @@ describe('searchCountries', () => {
 
     const controller = new AbortController();
 
-    await expect(searchCountries('germany', controller.signal)).rejects.toThrow(
-      'HTTP error: 500',
-    );
+    await expect(
+      searchCountries('germany', controller.signal),
+    ).rejects.toBeInstanceOf(HttpError);
   });
 
   it('should return an empty array for HTTP 404', async () => {
