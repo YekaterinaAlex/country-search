@@ -10,6 +10,7 @@ describe('mapCountryResponse', () => {
       flag: '🇩🇪',
       region: 'Europe',
       alpha2Code: 'DE',
+      languages: [],
     };
 
     const result = mapCountryResponse(apiCountry);
@@ -19,6 +20,8 @@ describe('mapCountryResponse', () => {
       capital: 'Berlin',
       population: 83200000,
       flag: '🇩🇪',
+      region: 'Europe',
+      languages: [],
     });
   });
 
