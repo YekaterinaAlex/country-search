@@ -128,4 +128,38 @@ describe('searchCountries', () => {
       timeoutSpy.mockRestore();
     }
   });
+
+  it('should reject with TimeoutError when request times out', async () => {
+    const timeoutController = new AbortController();
+
+    const timeoutSpy = vi
+      .spyOn(AbortSignal, 'timeout')
+      .mockReturnValue(timeoutController.signal);
+
+    try {
+      const fetchMock = vi.fn().mockImplementation(
+        (_url: string, options: RequestInit) =>
+          new Promise((_resolve, reject) => {
+            options.signal?.addEventListener('abort', () => {
+              reject(options.signal?.reason);
+            });
+          }),
+      );
+
+      vi.stubGlobal('fetch', fetchMock);
+
+      const controller = new AbortController();
+      const promise = searchCountries('germany', controller.signal);
+
+      timeoutController.abort(
+        new DOMException('Request timed out', 'TimeoutError'),
+      );
+
+      await expect(promise).rejects.toMatchObject({
+        name: 'TimeoutError',
+      });
+    } finally {
+      timeoutSpy.mockRestore();
+    }
+  });
 });
