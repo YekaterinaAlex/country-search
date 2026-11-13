@@ -3,6 +3,7 @@ import { searchCountries } from './api/searchCountries.js';
 import { mapCountryResponse } from './utils/mapCountryResponse.js';
 import { createCountryCard } from './ui/createCountryCard.js';
 import { createErrorMessage } from './ui/createErrorMessage.js';
+import { createCountryDetails } from './ui/createCountryDetails.js';
 
 const app = document.createElement('main');
 
@@ -62,6 +63,36 @@ const performSearch = async () => {
 
     countries.forEach((country) => {
       const card = createCountryCard(country);
+
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-label', `Show details for ${country.name}`);
+
+      const cards: HTMLElement[] = [];
+      const showDetails = () => {
+        const details = createCountryDetails(country);
+
+        const backButton = document.createElement('button');
+        backButton.type = 'button';
+        backButton.textContent = '← Back to results';
+        backButton.className = 'back-button';
+
+        backButton.addEventListener('click', () => {
+          results.replaceChildren(...cards);
+        });
+
+        results.replaceChildren(backButton, details);
+      };
+
+      card.addEventListener('click', showDetails);
+
+      card.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          showDetails();
+        }
+      });
+      cards.push(card);
       results.append(card);
     });
   } catch (error) {
